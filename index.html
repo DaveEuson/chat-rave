@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Chat Rave — sound lab</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header><span class="eyebrow">CHAT RAVE / SOUND LAB 001</span><span class="tag">HOUSE · 124 BPM · A MINOR</span></header>
+    <h1>Your chat.<br><em>The dance floor.</em></h1>
+    <p class="intro">One room. Sixteen steps. Every message lands on the beat.</p>
+    <section class="deck" aria-label="Sequencer">
+      <div class="transport"><button id="start">Start audio</button><button id="panic" class="danger">PANIC MUTE</button><label>Volume <input id="volume" type="range" min="0" max="70" value="35" aria-label="Master volume"></label><output id="volume-value">35%</output></div>
+      <div id="grid" aria-label="16-step playhead"></div>
+      <p id="audio-status" role="status">Ready. Start audio to hear kick, clap and hats.</p>
+      <p id="played" aria-live="off">Waiting for your first note.</p>
+    </section>
+    <div class="panels">
+      <section><h2>01 / Simulate chat</h2><p>No account needed. Messages play bass; emotes and !hat play percussion.</p>
+        <form id="chat-form"><label>Username<input id="username" value="nightowl" maxlength="25" pattern="[A-Za-z0-9_]{1,25}" required></label><label>Message<input id="message" value="!bass" maxlength="500" required></label><button>Send note</button></form>
+        <button id="simulate" aria-pressed="false">Start simulated crowd</button><p id="input-status" role="status">24 notes/bar maximum · 1 message/user per 1.5 seconds</p>
+      </section>
+      <section><h2>02 / Twitch chat</h2><p>Connect your own channel using Twitch login. No token pasting.</p>
+        <label>Public Twitch client ID<input id="client-id" autocomplete="off" placeholder="From your Twitch developer application"></label>
+        <p class="small">Register this exact OAuth redirect URL: <code id="redirect"></code></p>
+        <button id="connect">Connect Twitch</button><button id="disconnect" disabled>Disconnect</button><p id="twitch-status" role="status">Not connected.</p>
+      </section>
+    </div>
+    <footer>ALL SOUND SYNTHESIZED · NO SAMPLES · MILESTONE 1<br>Lead, arp and riser sounds arrive in milestone 2; for now their commands audition bass.</footer>
+  </main><script type="module" src="js/app.js"></script>
+</body></html>
