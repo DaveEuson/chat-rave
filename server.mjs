@@ -8,7 +8,7 @@ const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascrip
 createServer(async (req, res) => {
   const path = new URL(req.url, 'http://localhost').pathname;
   const file = path === '/' ? 'index.html' : path.slice(1);
-  if (!/^(index\.html|styles\.css|js\/[a-z-]+\.js)$/.test(file)) {
+  if (!/^(index\.html|styles\.css|js\/[a-z-]+\.js|tests\/audio\.html)$/.test(file)) {
     res.writeHead(404).end('Not found'); return;
   }
   try {

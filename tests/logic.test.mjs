@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { parseMessage, ChatGate } from '../js/chat.js';
 import { nextStep, scaleNote, identity, SCALE } from '../js/music.js';
+import { Sequencer } from '../js/sequencer.js';
 
 test('commands, emotes and untrusted messages', () => {
   for (const command of ['bass', 'lead', 'arp', 'hat', 'riser']) assert.equal(parseMessage(` !${command.toUpperCase()} `), command);
@@ -29,4 +30,19 @@ test('rate limits, duplicate spam, per-bar cap and invalid usernames', () => {
   assert.equal(gate.accept({ user: 'extra', text: 'yo' }, 3, 3000), null);
   assert.ok(gate.accept({ user: 'extra', text: 'yo' }, 16, 3000));
   assert.equal(gate.accept({ user: '<script>', text: 'yo' }, 16, 5000), null);
+});
+
+test('scheduler caps chords, respects lookahead and skips stalled notes', () => {
+  const played = [];
+  const synth = { ctx: { currentTime: 0 }, kick: () => {}, percussion: () => {}, bass: (...args) => played.push(args) };
+  const sequence = new Sequencer(synth, () => {});
+  sequence.origin = 0.08; sequence.cursor = 0;
+  for (let i = 0; i < 4; i++) assert.equal(sequence.add({ step: 0, midi: 33, pan: 0, command: 'bass' }), true);
+  assert.equal(sequence.add({ step: 0 }), false);
+  sequence.tick(); assert.equal(played.length, 4);
+  assert.equal(sequence.target(), 1, 'cannot add to an already scheduled step');
+  sequence.add({ step: 1, midi: 40, command: 'bass' });
+  synth.ctx.currentTime = 10; sequence.tick();
+  assert.equal(played.length, 4, 'must not burst overdue notes after browser suspension');
+  assert.equal(sequence.queue.size, 0);
 });

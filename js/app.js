@@ -1,6 +1,7 @@
 import { Synth } from './audio.js';
 import { Sequencer } from './sequencer.js';
 import { ChatGate } from './chat.js';
+import { login, consumeLogin, TwitchChat } from './twitch.js';
 
 const $ = id => document.getElementById(id);
 const cells = Array.from({ length: 16 }, (_, i) => {
@@ -51,4 +52,17 @@ $('simulate').onclick = () => {
   $('simulate').textContent = crowd ? 'Stop simulated crowd' : 'Start simulated crowd'; $('simulate').setAttribute('aria-pressed', String(Boolean(crowd)));
 };
 $('redirect').textContent = location.origin + location.pathname;
-$('connect').onclick = () => { $('twitch-status').textContent = 'Twitch connection is being added in the next slice.'; };
+const twitch = new TwitchChat(receive, message => {
+  $('twitch-status').textContent = message;
+  $('disconnect').disabled = twitch.stopped;
+});
+$('connect').onclick = () => {
+  try { login($('client-id').value.trim(), $('redirect').textContent); }
+  catch (error) { $('twitch-status').textContent = error.message; }
+};
+$('disconnect').onclick = () => { twitch.stop(); $('disconnect').disabled = true; $('twitch-status').textContent = 'Disconnected. Session token discarded.'; };
+try {
+  const session = consumeLogin();
+  if (session) { $('client-id').value = session.clientId; twitch.connect(session); }
+} catch (error) { $('twitch-status').textContent = error.message; }
+window.addEventListener('pagehide', () => twitch.stop());

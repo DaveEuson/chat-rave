@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Chat Rave audio checks</title>
+<h1>Offline synthesis checks</h1><pre id="result">Rendering…</pre>
+<script type="module">
+import { Synth } from '../js/audio.js';
+const result = document.getElementById('result');
+try {
+  const context = new OfflineAudioContext(2, 48000, 48000), synth = new Synth(context);
+  synth.level(0.7);
+  synth.kick(0.01); synth.percussion(0.01, 'clap'); synth.percussion(0.01);
+  for (let i = 0; i < 60; i++) synth.bass(0.01, 33 + i % 7, i % 2 ? 0.6 : -0.6);
+  const capped = synth.voices === 48;
+  const rendered = await context.startRendering();
+  let peak = 0, energy = 0, tail = 0;
+  for (let channel = 0; channel < 2; channel++) {
+    const samples = rendered.getChannelData(channel);
+    for (let i = 0; i < samples.length; i++) {
+      if (!Number.isFinite(samples[i])) throw new Error('Non-finite sample');
+      peak = Math.max(peak, Math.abs(samples[i])); energy += samples[i] ** 2;
+      if (i > 40000) tail = Math.max(tail, Math.abs(samples[i]));
+    }
+  }
+  if (!capped || energy < 0.01 || peak > 0.561 || tail > 0.00001) throw new Error('Audio safety regression');
+  result.textContent = `PASS: audible nonzero render; 48-source cap; finite stereo output.\nPeak ${peak.toFixed(5)} (limit 0.56); tail ${tail.toFixed(8)}.\nNo audio file generated. Musical quality still requires listening.`;
+} catch (error) { result.textContent = `FAIL: ${error.message}`; }
+</script></html>
