@@ -21,3 +21,13 @@
 - Added scheduler regression coverage for full steps, lookahead and stalled-browser recovery; revocation test checks token disposal.
 - Final slice validation: 8/8 Node tests passed; module syntax and diff checks passed. Local server returned 200 for app assets and rejected non-app paths. Final browser check started audio, queued/played bass from form, then stopped playback for handoff.
 - Listening checkpoint reached. Milestone 1 implementation is ready; live Twitch acceptance and user's sound verdict remain pending. Do not proceed to milestone 2 yet.
+
+## Scope revision — deterministic sets, recording and OBS authentication
+- User changed requirements before further feature work. Updated AGENTS.md and README; no runtime changes in this revision. Listening checkpoint still applies.
+- Deterministic foundation comes first: seeded noise and event-driven musical decisions; replace current Math.random noise and text/username-derived choices. Record initial settings, resolved decisions, controls, clock timing and stable event order. Engine/schema versions keep old sets interpretable. Cross-browser bit-identical PCM is not promised.
+- Milestone 2: compact local JSON set log, anonymous player aliases by default, usernames only on opt-in, master MediaRecorder capture. Milestone 3: same-engine replay, local import and set links without Twitch login. No automatic uploads. Offline WAV is stretch.
+- Corrected Hype Train plan: begin short riser then drop, stronger drop on level-up, breakdown on end. Supersedes original end/drop proposal.
+- Re-read Twitch device-code and refresh documentation. Public-client device flow can obtain and rotate tokens without a secret; planned OBS source owns both tokens in memory. Normal browser only authorizes device code. Existing implicit flow remains unchanged for now and requires login again after expiry.
+- Planned expiry handling: one refresh operation, rotated refresh token retained in memory, resubscribe if needed; on revocation/failure, discard credentials, keep local music running and request device authorization. OBS reload loses session; disable source shutdown/refresh on scene changes. Must verify in real OBS before claiming working integration.
+- Schedule supersedes prior plan: code, Pages/OBS verification and documentation complete by Oct 31. Nov 1–2 for demo production, YouTube, description and Devpost. Final deadline Nov 2, 2 PM PT.
+- Validation: documentation-only revision; inspected diff for consistency. Runtime tests not rerun because runtime code unchanged.
