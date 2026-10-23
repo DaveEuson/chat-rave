@@ -19,6 +19,8 @@ Twitch chat plays a synthesized electronic set. Milestone 1 listening build: hou
 - Per-user cooldown: 1.5 seconds; repeated text: 10 seconds; maximum 24 chat notes/bar, 4/step, 48 active sound sources.
 - `!bass`, `!lead`, `!arp`, `!hat`, `!riser` parsed. In this first listening build all pitched/FX commands audition bass; `!hat` and Twitch emotes trigger hats.
 - EventSub chat, session validation, reconnect handling and duplicate suppression. Hype Train/sub/cheer/raid sounds arrive in milestone 3.
+- Connection lifecycle: immediate subscription with an 8-second deadline, negotiated keepalive timeout, exponential retry capped at 30 seconds (rate limits can wait longer), fresh subscriptions after connection loss. One steady socket; only Twitch-directed handover briefly overlaps two sockets, without resubscribing. Duplicate handovers are suppressed. Revocation and protocol errors stop cleanly; transient closes retry. Startup/hourly validation retries temporary failures and discards invalid/expired tokens. Current implicit login still needs user login again on expiry; memory-only device-flow refresh remains planned.
+- Emotes are detected from `emote` fragments, not text matching. Twitch's hex color appears as an accent beside readable player text; empty/invalid colors use a stable username-hash fallback. No sending or separate bot account; only `user:read:chat` scope requested.
 - Start muted after refresh; OAuth token stays in memory and reconnect requires another login after reload. Only OAuth state and public client ID temporarily use session storage. No `.env` file is needed or served.
 
 ## Next milestones

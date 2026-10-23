@@ -9,6 +9,9 @@
 - Milestone 3 adds browser replay with the same engine/visuals, no Twitch login, local file import and shareable set links. Offline WAV rendering is stretch scope.
 - Hype Train: begin = short riser then drop; each level-up = bigger drop; end = breakdown. Never drop on end. Deduplicate and handle out-of-order notifications.
 - OBS auth plan: public-client device-code flow initiated by overlay; access and rotating refresh tokens in source memory only. One refresh at a time; failed/revoked refresh requires reauthorization while local music continues. Refresh/reload loses credentials.
+- Twitch reads chat only as the broadcaster: no sending, write scopes or separate bot account. Subscribe immediately after welcome; enforce an 8-second request deadline. Detect missing keepalives and resubscribe after loss. Validate tokens at startup and hourly; handle revocation, close codes and stale async responses.
+- One steady EventSub socket. User explicitly approved brief old/new overlap only for Twitch-directed handover; close old socket after new welcome. Duplicate reconnect notifications must not create additional sockets.
+- Detect emotes from message fragments with type emote. Use validated Twitch color for visual accents, stable username-hash fallback when empty. Preserve readable text independent of chatter-selected color. Record resolved colors in future sets without exposing usernames by default.
 - Ship no audio files. Synthesize every sound, including noise. Optional local-folder sample loading only after milestone 4, if time remains.
 - Never open, print, log, or request secret contents. Ignore `.env` files. Runtime OAuth tokens stay in memory, never in logs or persistent storage.
 - Validate external input. Bound voices, chat rate, notes per bar and output level. Preserve panic mute.

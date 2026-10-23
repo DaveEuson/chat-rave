@@ -15,7 +15,12 @@ function draw() {
     while (visualQueue.length && visualQueue[0].t <= synth.ctx.currentTime) {
       const { step, notes } = visualQueue.shift();
       cells.forEach((cell, i) => cell.classList.toggle('active', i === step));
-      if (notes.length) $('played').textContent = notes.map(n => `${n.user} → ${n.command === 'hat' ? 'hat' : 'bass'}`).join(' · ');
+      if (notes.length) $('played').replaceChildren(...notes.flatMap((n, i) => {
+        const mark = document.createElement('span');
+        mark.textContent = '● '; mark.style.color = n.color;
+        return [document.createTextNode(i ? ' · ' : ''), mark,
+          document.createTextNode(`${n.user} → ${n.command === 'hat' ? 'hat' : 'bass'}`)];
+      }));
     }
   }
   requestAnimationFrame(draw);

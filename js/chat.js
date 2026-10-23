@@ -1,5 +1,10 @@
 import { hash, identity, scaleNote } from './music.js';
 
+export function playerColor(user, color) {
+  return typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color)
+    ? color : `hsl(${hash(user) % 360} 75% 72%)`;
+}
+
 export function parseMessage(text, hasEmote = false) {
   if (typeof text !== 'string' || !text.trim() || text.length > 500) return null;
   if (/(?:https?:|www\.|\b[\w-]+\.(?:com|net|org|gg|io)\b)|([\s\S])\1{9}/i.test(text)) return null;
@@ -10,7 +15,7 @@ export function parseMessage(text, hasEmote = false) {
 
 export class ChatGate {
   constructor() { this.users = new Map(); this.bar = -1; this.count = 0; }
-  accept({ user, text, hasEmote = false }, step, now) {
+  accept({ user, text, hasEmote = false, color }, step, now) {
     if (typeof user !== 'string' || !/^[a-zA-Z0-9_]{1,25}$/.test(user)) return null;
     const command = parseMessage(text, hasEmote);
     if (!command) return null;
@@ -25,6 +30,6 @@ export class ChatGate {
       if (this.users.size >= 2000) return null;
     }
     this.users.set(id, { time: now, text }); this.count++;
-    return { user, command, ...identity(user), midi: scaleNote(hash(text) % 7), step };
+    return { user, command, color: playerColor(user, color), ...identity(user), midi: scaleNote(hash(text) % 7), step };
   }
 }
